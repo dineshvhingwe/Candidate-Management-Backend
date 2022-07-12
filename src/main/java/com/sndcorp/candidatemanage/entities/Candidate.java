@@ -3,8 +3,8 @@ package com.sndcorp.candidatemanage.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -77,7 +77,7 @@ public class Candidate implements Serializable {
 	@ElementCollection(targetClass = UUID.class)
 	// @Column(columnDefinition = "char(36)")
 	@Type(type = "org.hibernate.type.UUIDCharType")
-	private List<UUID> bookmarkedCandidates;
+	private Set<UUID> bookmarkedCandidates = new TreeSet<UUID>();
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "candidates_tags", 

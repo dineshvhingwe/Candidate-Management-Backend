@@ -60,6 +60,12 @@ public class CandidateController {
 		candidateService.deleteCandidate(email);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	@GetMapping("/candidate/{candidate_id}/bookmark/{bookmark_id}")
+	public ResponseEntity<Candidate> addBookmarkToCandidate(@PathVariable("candidate_id") String candidate_id, @PathVariable("bookmark_id") String bookmark_id ) {
+		Candidate candidate = candidateService.addBookmarkToCandidate(candidate_id, bookmark_id);
+		return new ResponseEntity<>(candidate, HttpStatus.CREATED);
+	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<?> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {

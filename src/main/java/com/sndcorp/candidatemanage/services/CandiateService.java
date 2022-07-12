@@ -1,6 +1,7 @@
 package com.sndcorp.candidatemanage.services;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,5 +51,13 @@ public class CandiateService {
 		return candidateRepo.findCandidateByEmail(email);
 		// .orElseThrow(() -> new CandidateNotFoundException("user by email " + email +
 		// " was not found"));
+	}
+
+	public Candidate addBookmarkToCandidate(String candidate_id, String bookmark_id) {
+		Candidate candidate = candidateRepo.findById(candidate_id).orElseThrow(()-> new ResourceNotFoundException("Candidate", candidate_id));
+		candidate.getBookmarkedCandidates().add(UUID.fromString(bookmark_id));
+	
+		return candidateRepo.save(candidate);
+
 	}
 }
