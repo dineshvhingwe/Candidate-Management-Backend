@@ -36,15 +36,12 @@ public class TagController {
 		return new ResponseEntity<>(tags, HttpStatus.OK);
 	}
 
-	/*
-	 * @GetMapping("/candidates/{candidateId}/tags") public
-	 * ResponseEntity<List<Tag>> getAllTagsByCandidateId(@PathVariable(value =
-	 * "candidateId") String candidateId) { if
-	 * (!candidateRepository.existsById(candidateId)) { throw new
-	 * ResourceNotFoundException("Not found Candidate with id = " + candidateId); }
-	 * List<Tag> tags = tagService.findTagsByCandidate(new Candidate()); return new
-	 * ResponseEntity<>(tags, HttpStatus.OK); }
-	 */
+	@GetMapping("/candidate/{candidateId}/tags")
+	public ResponseEntity<List<Tag>> getAllTagsByCandidateId(@PathVariable(value = "candidateId") String candidateId) {
+		List<Tag> tags = tagService.findTagsByCandidate(candidateId);
+		return new ResponseEntity<>(tags, HttpStatus.OK);
+	}
+
 	@GetMapping("/tags/{id}")
 	public ResponseEntity<Tag> getTagsById(@PathVariable(value = "id") Long id) {
 		Tag tag = tagService.findById(id);

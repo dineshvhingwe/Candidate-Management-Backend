@@ -20,6 +20,7 @@ public class CandidateManagementApplication {
 		SpringApplication.run(CandidateManagementApplication.class, args);
 	}
 
+	/*
 	@Bean
 	CommandLineRunner runner(CandiateService userService) {
 		return args -> {
@@ -34,6 +35,6 @@ public class CandidateManagementApplication {
 				System.out.println("Unable to save Candidate " + e.getMessage());
 			}
 		};
-	}
+	} */
 
 }

@@ -77,4 +77,13 @@ public class TagService {
 
 	}
 
+	public List<Tag> findTagsByCandidate(String candidateId) {
+		Candidate candidate = candidateRepo.findById(candidateId).orElseThrow(() ->
+			new ResourceNotFoundException("Candidate", candidateId));
+		
+		List<Long> tagIds = tagRepo.getTagIdsByCandidateId(candidate.getCandidate_id());
+		List<Tag> tags = tagRepo.findAllById(tagIds);
+		return tags;
+	}
+
 }
