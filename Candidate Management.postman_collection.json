@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "45c80dc8-ff1b-4dca-a9dc-9568ced6374d",
+		"name": "Candidate Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetAllCandidates",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"candidate_id\", jsonData[0].candidate_id);",
+							"postman.setGlobalVariable(\"candidate_id\", jsonData[0].candidate_id);",
+							"console.log(\"setting candidate_id\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/candidates",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddBookmarksToCandidate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/bookmark/f6f490ee-ea89-4046-abc7-ecbfb2739bed",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}",
+						"bookmark",
+						"f6f490ee-ea89-4046-abc7-ecbfb2739bed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddCandidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"name\": \"SomeName\",\n        \"surname\": \"SomeSurname\",\n        \"email\": \"somenewemail@gmail.com\",\n        \"phone\": \"8655555555\",\n        \"gender\": \"MALE\",\n        \"imageUrl\": \"www.gmail.com/myimage\",\n        \"address\": {\n            \"pin\": 123456,\n            \"city\": \"somecityaddress\",\n            \"town\": \"mytownaddr\",\n            \"addressline\": \"Flat 123, gallisome, AreaSome\"\n        },\n        \"bookmarkedCandidates\": [\n            \"34c31b6d-f317-4a28-9cd4-362efcb03deb\",\n            \"34c31b6d-f317-4a28-9cd4-362efcb03dec\"\n        ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateCandidate",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n        \"name\": \"someupdatedname\",\n        \"surname\": \"someupdatedsurname\",\n        \"email\": \"someone@someemail.com\",\n        \"phone\": \"8655555555\",\n        \"gender\": \"MALE\",\n        \"imageUrl\": \"www.gmail.com/myimage\",\n        \"address\": {\n            \"pin\": 123456,\n            \"city\": \"somecity\",\n            \"town\": \"mytown\",\n            \"addressline\": \"Flat 345, gallisome, AreaSome\"\n        },\n        \"bookmarkedCandidates\": [\n            \"34c31b6d-f317-4a28-9cd4-362efcb03deb\",\n            \"34c31b6d-f317-4a28-9cd4-362efcb03dec\"\n        ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteCandidate",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddProfessionForCandidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"employer\": \"Wipro\",\n    \"designation\": \"java developer\",\n    \"periodFrom\": \"2012-07-09\",\n    \"periodTo\": \"2020-07-09\",\n    \"professionAddress\": {\n        \"pin\": 123458,\n        \"city\": \"someWiprocity\",\n        \"town\": \"Wiprotown\",\n        \"addressline\": \"Wipro ofc, SomeIT park\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/profession",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}",
+						"profession"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllProfessions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"employer\": \"wiporo\",\n\t\"designation\": \"java developer\",\n\t\"periodFrom\": \"2020-07-09\",\n\t\"periodTo\": \"2021-07-09\",\n\t\"professionAddress\": {\n\t\t\"pin\": 123457,\n\t\t\"city\": \"somecity\",\n\t\t\"town\": \"mytown\",\n\t\t\"addressline\": \"Flat 345, gallisome\"\n\t}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/professions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"professions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetProfessionByCandidateUUID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"employer\": \"wiporo\",\n\t\"designation\": \"java developer\",\n\t\"periodFrom\": \"2020-07-09\",\n\t\"periodTo\": \"2021-07-09\",\n\t\"professionAddress\": {\n\t\t\"pin\": 123457,\n\t\t\"city\": \"somecity\",\n\t\t\"town\": \"mytown\",\n\t\t\"addressline\": \"Flat 345, gallisome\"\n\t}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/professions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}",
+						"professions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteProfessionById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/profession/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"profession",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteTagByTagId",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/tag/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tag",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddTagForCandidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Java\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidates/{{candidate_id}}/tags",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidates",
+						"{{candidate_id}}",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetTagsByCandidateUUID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Software\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/tags",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}",
+						"tags"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RemoveTagOfCandidatesByTagId",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/tag/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{candidate_id}}",
+						"tag",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCandidatesByTagID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Software\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidates/tag/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidates",
+						"tag",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllTags",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Software\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tags",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tags"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
