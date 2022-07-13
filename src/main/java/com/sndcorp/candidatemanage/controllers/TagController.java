@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sndcorp.candidatemanage.entities.Candidate;
 import com.sndcorp.candidatemanage.entities.Tag;
 import com.sndcorp.candidatemanage.exceptions.ResourceNotFoundException;
-import com.sndcorp.candidatemanage.repo.CandidateRepository;
 import com.sndcorp.candidatemanage.services.TagService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +62,7 @@ public class TagController {
 		return new ResponseEntity<Tag>(tag, HttpStatus.CREATED);
 	}
 
-	@DeleteMapping("/candidates/{candidateId}/tags/{tagId}")
+	@DeleteMapping("/candidate/{candidateId}/tag/{tagId}")
 	public ResponseEntity<HttpStatus> deleteTagFromCandidate(@PathVariable(value = "candidateId") String candidateId,
 			@PathVariable(value = "tagId") Long tagId) {
 		tagService.deleteTagFromCandidate(candidateId, tagId);
@@ -71,7 +70,7 @@ public class TagController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@DeleteMapping("/tags/{id}")
+	@DeleteMapping("/tag/{id}")
 	public ResponseEntity<HttpStatus> deleteTag(@PathVariable("id") long id) {
 		tagService.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -1,6 +1,7 @@
 package com.sndcorp.candidatemanage.repo;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
+import com.sndcorp.candidatemanage.entities.Tag;
 
 public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	// spring creates a query by understanding the method using naming convention
@@ -19,7 +21,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	void deleteCandidateByEmail(String email);
 
 	// query method
-	Candidate findCandidateByEmail(String email);
+	Optional<Candidate> findCandidateByEmail(String email);
 
 	@Transactional(value = TxType.REQUIRES_NEW)
 	@Modifying(clearAutomatically = true)
@@ -27,5 +29,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	void updateNameAndJobTitleByEmail(String name, String surname, String email);
 
 	List<Candidate> findCandidatesByTagsId(Long tagId);
+	
+	List<Candidate> getCandidatesByTags(Tag tag);
 
 }

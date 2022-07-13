@@ -5,12 +5,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,33 +53,20 @@ public class CandidateController {
 	}
 
 	@DeleteMapping("/candidate/{email}")
-	public ResponseEntity<?> deleteCandidate(@PathVariable("email") String email) {
-		candidateService.deleteCandidate(email);
+	public ResponseEntity<?> deleteCandidate(@PathVariable("email") String candidate_id) {
+		candidateService.deleteCandidate(candidate_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@GetMapping("/candidate/{candidate_id}/bookmark/{bookmark_id}")
 	public ResponseEntity<Candidate> addBookmarkToCandidate(@PathVariable("candidate_id") String candidate_id, @PathVariable("bookmark_id") String bookmark_id ) {
-		Candidate candidate = candidateService.addBookmarkToCandidate(candidate_id, bookmark_id);
+		Candidate candidate = candidateService.addOrRemoveBookmarkToCandidate(candidate_id, bookmark_id);
 		return new ResponseEntity<>(candidate, HttpStatus.CREATED);
 	}
-
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException ex) {
-		log.error("MethodArgumentNotValidException Occurred :{}", ex.getMessage());
-		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	@GetMapping("/candidates/tag/{tagId}")
+	public List<Candidate> getCandidatesByTagId(@PathVariable("tagId") Long tagId) {
+		
+		return candidateService.getCandidatesByTagId(tagId);
+		
 	}
-
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<?> dataIntegrityViolationExceptionExceptionHandler(DataIntegrityViolationException ex) {
-		log.error("Non Rollable DataIntegrityViolationException Occurred :{}", ex.getMessage());
-		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.CONFLICT);
-	}
-
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<?> exceptionHandler(RuntimeException ex) {
-		log.error("Non Rollable RuntimeException Occurred :{}", ex);
-		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
 }

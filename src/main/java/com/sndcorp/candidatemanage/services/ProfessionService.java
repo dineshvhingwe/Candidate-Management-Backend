@@ -1,6 +1,7 @@
 package com.sndcorp.candidatemanage.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ProfessionService {
 		log.info("Adding Profession from scratch: {} ", profession);
 		return professionRepo.save(profession);
 	}
-	
+
 	public Profession addProfessionToCandidate(String candidate_id, Profession profession) {
 		log.info("Adding Profession:: {} to Candidate:: {} ", profession, candidate_id);
 		Candidate candidate = candidateRepo.findById(candidate_id)
@@ -45,10 +46,9 @@ public class ProfessionService {
 	}
 
 	public List<Profession> findProfessionByCandidate(String candidateId) {
-		Candidate candidate = candidateRepo.getReferenceById(candidateId);
+		Candidate candidate = candidateRepo.findById(candidateId)
+				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
 		log.info("Finding profession of {}", candidateId);
 		return professionRepo.findByCandidate(candidate);
-		// .orElseThrow(() -> new ProfessionNotFoundException("user by email " + email +
-		// " was not found"));
 	}
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ResourceNotFoundException extends RuntimeException{
     private static final long serialVersionUID = -28267242159090386L;
 
-    private static String message = " not for for Id: ";
+    private static String message = " not found for Id: ";
 	public ResourceNotFoundException(Object s1, Object s2) {
         super(s1.toString() + message + s2.toString());
     }
