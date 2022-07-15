@@ -21,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -47,17 +48,24 @@ public class Candidate implements Serializable {
 	private static final long serialVersionUID = 17413739818370321L;
 
 	@Id // primary key
+
 	@GeneratedValue(generator = "uuid")
+
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
+
 	@Column(length = 36)
 	private String candidate_id;
 
 	private String name;
+
 	private String surname;
 
 	// @Lob
 	// private String about;
-
+	@Size(min = 5, max = 20)
+	@Column(unique = true)
+	private String username;
+	
 	@Column(unique = true, updatable = false)
 	@Email
 	private String email;
@@ -80,9 +88,7 @@ public class Candidate implements Serializable {
 	private Set<UUID> bookmarkedCandidates = new TreeSet<UUID>();
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "candidates_tags", 
-	joinColumns = @JoinColumn(name = "candidate_id"), 
-	inverseJoinColumns = @JoinColumn(name = "tag_id") )
+	@JoinTable(name = "candidates_tags", joinColumns = @JoinColumn(name = "candidate_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<Tag> tags = new HashSet<>();
 
 	@Column(name = "date_created")
@@ -96,14 +102,14 @@ public class Candidate implements Serializable {
 	// getters and setters
 	public void addTag(Tag tag) {
 		this.tags.add(tag);
-		//tag.getCandidates().add(this);
+		// tag.getCandidates().add(this);
 	}
 
 	public void removeTag(long tagId) {
 		Tag tag = this.tags.stream().filter(t -> t.getId() == tagId).findFirst().orElse(null);
 		if (tag != null) {
 			this.tags.remove(tag);
-			//tag.getCandidates().remove(this);
+			// tag.getCandidates().remove(this);
 		}
 	}
 }

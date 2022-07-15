@@ -23,6 +23,8 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	// query method
 	Optional<Candidate> findCandidateByEmail(String email);
 
+	Optional<Candidate> findCandidateByUsername(String username);
+	
 	@Transactional(value = TxType.REQUIRES_NEW)
 	@Modifying(clearAutomatically = true)
 	@Query(value = "UPDATE CANDIDATES c SET c.name = :name, c.surname = :surname where c.email = :email", nativeQuery = true)
@@ -31,5 +33,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	List<Candidate> findCandidatesByTagsId(Long tagId);
 	
 	List<Candidate> getCandidatesByTags(Tag tag);
+	
+	Boolean existsByUsername(String username);
+
+	Boolean existsByEmail(String email);
 
 }

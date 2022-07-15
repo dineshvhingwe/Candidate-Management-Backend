@@ -1,12 +1,7 @@
 package com.sndcorp.candidatemanage;
 
-import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -44,12 +39,18 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<?> dataIntegrityViolationExceptionExceptionHandler(DataIntegrityViolationException ex) {
+	@ExceptionHandler(value = { DataIntegrityViolationException.class })
+	public ResponseEntity<?> dataIntegrityViolationExceptionHandler(RuntimeException ex) {
 		log.error("Non Rollable DataIntegrityViolationException Occurred :{}", ex.getMessage());
 		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.CONFLICT);
 	}
-
+	
+	@ExceptionHandler(value = { SecurityException.class})
+	public ResponseEntity<?> securityExceptionHandler(RuntimeException ex) {
+		log.error("Non Rollable SecurityException Occurred :{}", ex.getMessage());
+		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<?> exceptionHandler(RuntimeException ex) {
 		log.error("Non Rollable RuntimeException Occurred :{}", ex);

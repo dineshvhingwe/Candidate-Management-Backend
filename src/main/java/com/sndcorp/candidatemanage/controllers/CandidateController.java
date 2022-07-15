@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,15 +29,21 @@ public class CandidateController {
 	private CandiateService candidateService;
 
 	@GetMapping("/candidates")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Candidate>> getAllCandidates() {
 		List<Candidate> Candidates = candidateService.findAllCandidates();
 		return new ResponseEntity<>(Candidates, HttpStatus.OK);
 	}
-
-	@GetMapping("/candidates/{email}")
+/*
+	@GetMapping("/candidate/{email}")
 	// @ApiOperation(value = "Finds Candidate By Id",
-	public ResponseEntity<Candidate> getCandidateByID(@PathVariable("email") String email) {
+	public ResponseEntity<Candidate> getCandidateByEmail(@PathVariable("email") String email) {
 		Candidate Candidate = candidateService.findCandidateByEmail(email);
+		return new ResponseEntity<>(Candidate, HttpStatus.OK);
+	} */
+	@GetMapping("/candidate/{username}")
+	public ResponseEntity<Candidate> getCandidateByUsername(@PathVariable("username") String username) {
+		Candidate Candidate = candidateService.findCandidateByUsername(username);
 		return new ResponseEntity<>(Candidate, HttpStatus.OK);
 	}
 
@@ -46,13 +53,14 @@ public class CandidateController {
 		return new ResponseEntity<>(newCandidate, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/candidate")
-	public ResponseEntity<Candidate> updateCandidate(@RequestBody @Valid Candidate candidate) {
-		Candidate updateCandidate = candidateService.updateCandidate(candidate);
-		return new ResponseEntity<>(updateCandidate, HttpStatus.OK);
+	@PutMapping("/candidate/{username}")
+	public ResponseEntity<String> updateCandidate(@PathVariable("username") String username, @RequestBody @Valid Candidate candidate) {
+		username = candidateService.updateCandidate(candidate, username);
+		return new ResponseEntity<>("updateCandidate request raised for username: "+ username, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/candidate/{email}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> deleteCandidate(@PathVariable("email") String candidate_id) {
 		candidateService.deleteCandidate(candidate_id);
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -63,7 +71,7 @@ public class CandidateController {
 		Candidate candidate = candidateService.addOrRemoveBookmarkToCandidate(candidate_id, bookmark_id);
 		return new ResponseEntity<>(candidate, HttpStatus.CREATED);
 	}
-	@GetMapping("/candidates/tag/{tagId}")
+	@GetMapping("/candidate/tag/{tagId}")
 	public List<Candidate> getCandidatesByTagId(@PathVariable("tagId") Long tagId) {
 		
 		return candidateService.getCandidatesByTagId(tagId);
