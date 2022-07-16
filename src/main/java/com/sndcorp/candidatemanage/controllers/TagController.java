@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class TagController {
 	private TagService tagService;
 
 	@GetMapping("/tags")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Tag>> getAllTags() {
 		List<Tag> tags = tagService.findAll();
 		if (tags.isEmpty()) {
@@ -47,32 +49,35 @@ public class TagController {
 		return new ResponseEntity<>(tag, HttpStatus.OK);
 	}
 
-	@GetMapping("/tags/{tagId}/candidates")
-	public ResponseEntity<List<Candidate>> getAllCandidatesByTagId(@PathVariable(value = "tagId") Long tagId) {
-		if (!tagService.existsById(tagId)) {
-			throw new ResourceNotFoundException("Tag", tagId);
+	@GetMapping("/tag/{id}/candidates")
+	public ResponseEntity<List<Candidate>> getAllCandidatesByTagId(@PathVariable(value = "id") Long id) {
+		if (!tagService.existsById(id)) {
+			throw new ResourceNotFoundException("Tag", id);
 		}
-		return new ResponseEntity<>(tagService.findCandidatesByTagsId(tagId), HttpStatus.OK);
+		return new ResponseEntity<>(tagService.findCandidatesByTags(id), HttpStatus.OK);
 	}
 
-	@PostMapping("/candidates/{candidateId}/tags")
+	@PostMapping("/candidate/{candidateId}/tag")
 	public ResponseEntity<Tag> addTag(@PathVariable(value = "candidateId") String candidateId,
 			@RequestBody Tag tagRequest) {
 		Tag tag = tagService.addTag(candidateId, tagRequest);
 		return new ResponseEntity<Tag>(tag, HttpStatus.CREATED);
 	}
 
-	@DeleteMapping("/candidate/{candidateId}/tag/{tagId}")
+	@DeleteMapping("/candidate/{candidateId}/tag/{tag_id}")
 	public ResponseEntity<HttpStatus> deleteTagFromCandidate(@PathVariable(value = "candidateId") String candidateId,
-			@PathVariable(value = "tagId") Long tagId) {
-		tagService.deleteTagFromCandidate(candidateId, tagId);
-
+			@PathVariable(value = "tag_id") Long tag_id) {
+		
+		tagService.deleteTagFromCandidate(candidateId, tag_id);
+		log.debug("deleteTagFromCandidate successfully deleted tag {}", tag_id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@DeleteMapping("/tag/{id}")
-	public ResponseEntity<HttpStatus> deleteTag(@PathVariable("id") long id) {
-		tagService.deleteById(id);
+	@DeleteMapping("/tag/{tag_id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<HttpStatus> deleteTag(@PathVariable("tag_id") Long tag_id) {
+		tagService.deleteById(tag_id);
+		log.debug("deleteTag successfully deleted tag {}", tag_id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

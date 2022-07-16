@@ -12,11 +12,15 @@ import com.sndcorp.candidatemanage.entities.Tag;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
-	//List<Tag> findTagsByCandidate(Candidate candidate);
+
 	Optional<Tag> findByName(String name);
+	
+	boolean existsByName(String tag_name);
 	
 	@Query(value = "SELECT TAG_ID FROM candidates_tags WHERE candidate_id = :candidateId", nativeQuery = true)
 	List<Long> getTagIdsByCandidateId(String candidateId);
 	
 	List<Tag> findTagsByCandidates(Candidate cndidate);
+	
+	void deleteById(Long tag_id);
 }

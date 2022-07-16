@@ -28,6 +28,7 @@ public class TagService {
 	public List<Tag> findAll() {
 		List<Tag> tags = new ArrayList<Tag>();
 		tagRepo.findAll().forEach(tags::add);
+		log.debug("found all tags: {}" , tags);
 		return tags;
 	}
 
@@ -35,23 +36,28 @@ public class TagService {
 		return tagRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tag", id));
 	}
 
-	public boolean existsById(Long tagId) {
-		return tagRepo.existsById(tagId);
+	public boolean existsById(Long id) {
+		return tagRepo.existsById(id);
 	}
 
-	public List<Candidate> findCandidatesByTagsId(Long tagId) {
-		List<Candidate> candidates = candidateRepo.findCandidatesByTagsId(tagId);
+	public List<Candidate> findCandidatesByTags(Long tag_Id) {
+		Tag tag = tagRepo.findById(tag_Id).orElseThrow(()-> new ResourceNotFoundException("Tag", tag_Id));
+				
+		List<Candidate> candidates = candidateRepo.getCandidatesByTags(tag);
+		log.debug("found Candidate by Tag {} ARE:: {}", tag_Id, candidates);
 		return candidates;
 	}
 
-	public void deleteById(long id) {
-		tagRepo.deleteById(id);
+	public void deleteById(Long tag_id) {
+		log.debug("deleting tag {}", tag_id);
+		tagRepo.deleteById(tag_id);
 	}
 
 	public Tag addTag(String candidateId, Tag tagRequest) {
 		Candidate candidate = candidateRepo.findById(candidateId)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
-
+		log.debug("adding tag to candidate : {}", candidate);
+		tagRequest.setName(tagRequest.getName().toLowerCase()); //store all tags in lowercase
 		Optional<Tag> opt_tag = tagRepo.findByName(tagRequest.getName());
 
 		if (opt_tag.isPresent()) {
@@ -68,13 +74,13 @@ public class TagService {
 		}
 	}
 
-	public void deleteTagFromCandidate(String candidateId, Long tagId) {
+	public void deleteTagFromCandidate(String candidateId, Long tag_id) {
 		Candidate candidate = candidateRepo.findById(candidateId)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
 
-		candidate.removeTag(tagId);
+		candidate.removeTag(tag_id);
+		log.debug("removed tag from candidate {}. Persisting the Candidate...", candidate);
 		candidateRepo.save(candidate);
-
 	}
 
 	public List<Tag> findTagsByCandidate(String candidateId) {
@@ -82,6 +88,7 @@ public class TagService {
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
 
 		List<Tag> tags = tagRepo.findTagsByCandidates(candidate);
+		log.debug("findTagsByCandidate tags:: {}", tags);
 		return tags;
 	}
 
