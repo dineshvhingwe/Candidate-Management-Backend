@@ -4,7 +4,8 @@ Spring Boot based backend to manage candidates.
 
 
 
-#Dockerization Guide
+# Dockerization Guide
+
 $ sudo ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=<IMAGE_NAME>
    ==> Directly create image by spring boot maven plugin (build-image) phase
 $ sudo docker run -it -p 8080:8080 <IMAGE_NAME>
