@@ -27,7 +27,6 @@ public class Profession {
 	@Id // primary key
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	@JsonIgnore
 	@Column(length = 36)
 	private String profession_id;
 	

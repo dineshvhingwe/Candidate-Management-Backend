@@ -14,11 +14,11 @@ import com.sndcorp.candidatemanage.entities.Candidate;
 import com.sndcorp.candidatemanage.entities.Tag;
 
 public interface CandidateRepository extends JpaRepository<Candidate, String> {
-	// spring creates a query by understanding the method using naming convention
-	// //delete+ classname + ById
-	// it is called query method
+	
+	Optional<Candidate> findByUsername(String username);
+	
 	@Transactional
-	void deleteCandidateByEmail(String email);
+	void deleteByUsername(String username);
 
 	// query method
 	Optional<Candidate> findCandidateByEmail(String email);
@@ -30,8 +30,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	@Query(value = "UPDATE CANDIDATES c SET c.name = :name, c.surname = :surname where c.email = :email", nativeQuery = true)
 	void updateNameAndJobTitleByEmail(String name, String surname, String email);
 
-	List<Candidate> findCandidatesByTagsId(Long tagId);
-	
 	List<Candidate> getCandidatesByTags(Tag tag);
 	
 	Boolean existsByUsername(String username);

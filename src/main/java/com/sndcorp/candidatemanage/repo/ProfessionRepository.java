@@ -10,5 +10,6 @@ import com.sndcorp.candidatemanage.entities.Profession;
 public interface ProfessionRepository extends JpaRepository<Profession,String> {
     //spring creates a query by understanding the method using naming convention //delete+ classname + ById	
 	List<Profession> findByCandidate(Candidate candidate);
+
 	void deleteByCandidate(Candidate candidate);
 }

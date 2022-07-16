@@ -2,7 +2,11 @@ package com.sndcorp.candidatemanage.services;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
@@ -40,8 +44,21 @@ public class ProfessionService {
 		return professionRepo.findAll();
 	}
 
+	@Transactional(value = TxType.REQUIRES_NEW)
 	public void deleteProfession(String id) {
-		professionRepo.deleteById(id);
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		Candidate candidate = candidateRepo.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException("Candidate", username));
+
+		log.debug("deleting profession from username: {}", username);
+		//delete only if profession exists in that candidate
+		professionRepo.findByCandidate(candidate).forEach((profession) -> {
+			log.debug("checking profession id equality of {}", profession.getProfession_id());
+			if (profession.getProfession_id().equalsIgnoreCase(id)) {
+				professionRepo.deleteById(id);
+				log.debug("deleted profession successfully {} ", id);
+			}
+		});
 	}
 
 	public List<Profession> findProfessionByCandidate(String candidateId) {

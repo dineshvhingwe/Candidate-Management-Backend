@@ -16,17 +16,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.sndcorp.candidatemanage.security.jwt.AuthEntryPointJwt;
 import com.sndcorp.candidatemanage.security.jwt.JwtTokenFilter;
-import com.sndcorp.candidatemanage.security.services.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-		securedEnabled = true,
-		jsr250Enabled = true,
-		prePostEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfiguration {
-	@Autowired
-	UserDetailsServiceImpl userDetailsService;
 
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
@@ -37,29 +31,30 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
 	@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-	 @Bean
-     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-     	http.csrf().disable();
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable();
 		http.cors();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.authorizeRequests().antMatchers("/").permitAll().and()
-		.authorizeRequests().antMatchers("/auth/**", "/h2-console/**").permitAll().anyRequest().authenticated();
+		http.authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests()
+				.antMatchers("/auth/**", "/h2-console/**").permitAll().anyRequest().authenticated();
 		http.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
 		http.headers().frameOptions().disable();
-	    http.headers().frameOptions().sameOrigin();
+		http.headers().frameOptions().sameOrigin();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-	
+
 		return http.build();
-	 }
+	}
 }

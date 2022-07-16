@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class ProfessionController {
 	private ProfessionService professionService;
 
 	@GetMapping("/professions")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Profession>> getAllProfessions() {
 		List<Profession> Professions = professionService.findAllProfessions();
 		return new ResponseEntity<>(Professions, HttpStatus.OK);
@@ -45,9 +47,9 @@ public class ProfessionController {
 		return new ResponseEntity<>(newprofession, HttpStatus.CREATED);
 	}
 
-	@DeleteMapping("/profession/{profession_id}")
-	public ResponseEntity<?> deleteProfession(@PathVariable("profession_id") String id) {
-		professionService.deleteProfession(id);
+	@DeleteMapping("/candidate/{candidate_id}/profession/{profession_id}")
+	public ResponseEntity<?> deleteProfession(@PathVariable("profession_id") String profession_id) {
+		professionService.deleteProfession(profession_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

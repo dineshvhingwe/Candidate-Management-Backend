@@ -28,6 +28,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.sndcorp.candidatemanage.exceptions.ResourceNotFoundException;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -48,11 +50,8 @@ public class Candidate implements Serializable {
 	private static final long serialVersionUID = 17413739818370321L;
 
 	@Id // primary key
-
 	@GeneratedValue(generator = "uuid")
-
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
-
 	@Column(length = 36)
 	private String candidate_id;
 
@@ -79,7 +78,7 @@ public class Candidate implements Serializable {
 	private String imageUrl;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	// extra column in Candidate table address_id as FK to addree_ID in Address PK
+	// extra column in Candidate table address_id as FK to addree_ID in Address table asPK
 	private Address address;
 
 	@ElementCollection(targetClass = UUID.class)
@@ -99,17 +98,17 @@ public class Candidate implements Serializable {
 	@UpdateTimestamp
 	private Date lastUpdated;
 
-	// getters and setters
+	// getters and setters to easeout adding/removings tags to collectionsion
 	public void addTag(Tag tag) {
 		this.tags.add(tag);
-		// tag.getCandidates().add(this);
 	}
 
-	public void removeTag(long tagId) {
-		Tag tag = this.tags.stream().filter(t -> t.getId() == tagId).findFirst().orElse(null);
+	public void removeTag(Long tag_id) {
+		Tag tag = this.tags.stream().filter(t -> t.getId() == tag_id).findFirst().orElse(null);
 		if (tag != null) {
 			this.tags.remove(tag);
-			// tag.getCandidates().remove(this);
+		} else {
+			throw new ResourceNotFoundException("Tag", tag_id);
 		}
 	}
 }

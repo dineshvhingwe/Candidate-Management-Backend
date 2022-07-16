@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -45,44 +46,45 @@ public class CandiateService {
 	}
 
 	public String updateCandidate(Candidate candidate, String username) {
-		
+
 		userNameSecurityCheck(username);
-		
+
 		Runnable runnable = () -> {
-		Candidate empDb = candidateRepo.findCandidateByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException("Candidate", "Email"));
+			Candidate empDb = candidateRepo.findCandidateByUsername(username)
+					.orElseThrow(() -> new ResourceNotFoundException("Candidate", "Email"));
 
-		log.info("updating candidate values in thread: {} ", Thread.currentThread().getName());
-		empDb.setName(candidate.getName());
-		empDb.setSurname(candidate.getSurname());
-		empDb.setAddress(candidate.getAddress());
-		empDb.setBookmarkedCandidates(candidate.getBookmarkedCandidates());
-		empDb.setImageUrl(candidate.getImageUrl());
-		empDb.setTags(candidate.getTags());
-		if( ! empDb.getPhone().equalsIgnoreCase(candidate.getPhone())) {
-			triggerMultiFactorAuthPhone();
-			
-		}
-		if( ! empDb.getEmail().equalsIgnoreCase(candidate.getEmail())) {
-			triggerMultiFactorAuthEmail();
+			log.info("updating candidate values in thread: {} ", Thread.currentThread().getName());
+			empDb.setName(candidate.getName());
+			empDb.setSurname(candidate.getSurname());
+			empDb.setAddress(candidate.getAddress());
+			empDb.setBookmarkedCandidates(candidate.getBookmarkedCandidates());
+			empDb.setImageUrl(candidate.getImageUrl());
+			empDb.setTags(candidate.getTags());
+			if (!empDb.getPhone().equalsIgnoreCase(candidate.getPhone())) {
+				triggerMultiFactorAuthPhone();
 
-		}
-		candidateRepo.save(empDb);
+			}
+			if (!empDb.getEmail().equalsIgnoreCase(candidate.getEmail())) {
+				triggerMultiFactorAuthEmail();
+
+			}
+			candidateRepo.save(empDb);
 		};
 
-		log.debug("Starting Thread to update the values of Phone and Email {}",  Thread.currentThread().getName());
-		 new Thread(runnable).start();
+		log.debug("Starting Thread to update the values of Phone and Email {}", Thread.currentThread().getName());
+		new Thread(runnable).start();
 		log.debug("Started Thread to update the values of Phone and Email");
 
 		return username;
 	}
 
 	@Transactional(value = TxType.REQUIRES_NEW)
-	public void deleteCandidate(String id) {
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void deleteCandidate(String username) {
 
-		professionRepo.deleteByCandidate(
-				candidateRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Candidate", id)));
-		candidateRepo.deleteById(id);
+		professionRepo.deleteByCandidate(candidateRepo.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException("Candidate", username)));
+		candidateRepo.deleteByUsername(username);
 	}
 
 	public Candidate findCandidateByEmail(String email) {
@@ -112,13 +114,6 @@ public class CandiateService {
 
 	}
 
-	public List<Candidate> getCandidatesByTagId(Long tagId) {
-
-		Tag tag = tagRepo.findById(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag", tagId));
-		return candidateRepo.getCandidatesByTags(tag);
-
-	}
-
 	public void userNameSecurityCheck(String usernameFromRequest) {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		log.info("UserName Obtained from context: {}", user.getUsername());
@@ -127,12 +122,21 @@ public class CandiateService {
 			throw new SecurityException("Username from Context different than in Request !!");
 		}
 	}
-	
-	public void triggerMultiFactorAuthPhone() {
+
+	@Transactional(value = TxType.REQUIRES_NEW)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void deleteCandidateByCandidateId(String candidateId) {
 		
+		professionRepo.deleteByCandidate(candidateRepo.findById(candidateId)
+				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId)));
+		candidateRepo.deleteById(candidateId);		
 	}
 	
+	public void triggerMultiFactorAuthPhone() {
+
+	}
+
 	public void triggerMultiFactorAuthEmail() {
-		
+
 	}
 }

@@ -34,13 +34,7 @@ public class CandidateController {
 		List<Candidate> Candidates = candidateService.findAllCandidates();
 		return new ResponseEntity<>(Candidates, HttpStatus.OK);
 	}
-/*
-	@GetMapping("/candidate/{email}")
-	// @ApiOperation(value = "Finds Candidate By Id",
-	public ResponseEntity<Candidate> getCandidateByEmail(@PathVariable("email") String email) {
-		Candidate Candidate = candidateService.findCandidateByEmail(email);
-		return new ResponseEntity<>(Candidate, HttpStatus.OK);
-	} */
+
 	@GetMapping("/candidate/{username}")
 	public ResponseEntity<Candidate> getCandidateByUsername(@PathVariable("username") String username) {
 		Candidate Candidate = candidateService.findCandidateByUsername(username);
@@ -48,6 +42,7 @@ public class CandidateController {
 	}
 
 	@PostMapping(value = "/candidate", consumes = "application/json")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Candidate> addCandidate(@RequestBody @Valid Candidate Candidate) {
 		Candidate newCandidate = candidateService.addCandidate(Candidate);
 		return new ResponseEntity<>(newCandidate, HttpStatus.CREATED);
@@ -59,10 +54,16 @@ public class CandidateController {
 		return new ResponseEntity<>("updateCandidate request raised for username: "+ username, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/candidate/{email}")
+	@DeleteMapping("/candidate/{username}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> deleteCandidate(@PathVariable("email") String candidate_id) {
-		candidateService.deleteCandidate(candidate_id);
+	public ResponseEntity<?> deleteCandidateByUsername(@PathVariable("username") String username) {
+		candidateService.deleteCandidate(username);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	@DeleteMapping("/candidate/candidateId/{candidateId}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> deleteCandidateByCandidateId(@PathVariable("candidateId") String candidateId) {
+		candidateService.deleteCandidateByCandidateId(candidateId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -71,10 +72,5 @@ public class CandidateController {
 		Candidate candidate = candidateService.addOrRemoveBookmarkToCandidate(candidate_id, bookmark_id);
 		return new ResponseEntity<>(candidate, HttpStatus.CREATED);
 	}
-	@GetMapping("/candidate/tag/{tagId}")
-	public List<Candidate> getCandidatesByTagId(@PathVariable("tagId") Long tagId) {
-		
-		return candidateService.getCandidatesByTagId(tagId);
-		
-	}
+	
 }
