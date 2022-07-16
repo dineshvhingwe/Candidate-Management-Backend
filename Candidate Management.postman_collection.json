@@ -6,15 +6,88 @@
 	},
 	"item": [
 		{
-			"name": "GetAllCandidates",
+			"name": "Register-User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Dinesh\",\n    \"surname\": \"H\",\n    \"phone\": \"8855555555\",\n    \"username\": \"dineshh\",\n    \"password\": \"password\",\n    \"email\": \"dinesh@email.com\",\n    \"gender\": \"MALE\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login-User (Generate JWT)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"var jsonData = JSON.parse(responseBody);",
-							"postman.setEnvironmentVariable(\"candidate_id\", jsonData[0].candidate_id);",
-							"postman.setGlobalVariable(\"candidate_id\", jsonData[0].candidate_id);",
+							"postman.setEnvironmentVariable(\"jwt_token\", jsonData.accessToken);",
+							"postman.setGlobalVariable(\"jwt_token\", jsonData.accessToken);",
+							"console.log(\"setting jwt_token form accessToken\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"dineshing\",\n    \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetlCandidateByUsername",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"candidate_id\", jsonData.candidate_id);",
+							"postman.setGlobalVariable(\"candidate_id\", jsonData.candidate_id);",
+							"postman.setGlobalVariable(\"username\", jsonData.username);",
 							"console.log(\"setting candidate_id\");"
 						],
 						"type": "text/javascript"
@@ -22,17 +95,67 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/candidates",
+					"raw": "http://localhost:8080/candidate/{{username}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"candidates"
+						"candidate",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateCandidate",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"DineshUpdated\",\n    \"surname\": \"HingweUpdated\",\n    \"email\": \"dinesh@email.com\",\n    \"imageUrl\": \"www.gmail.com/myimageNew\",\n    \"address\": {\n        \"pin\": 123456,\n        \"city\": \"somecity\",\n        \"town\": \"mytown\",\n        \"addressline\": \"Flat 345, gallisome, AreaSome\"\n    },\n    \"bookmarkedCandidates\": [\n        \"34c31b6d-f317-4a28-9cd4-362efcb03deb\",\n        \"34c31b6d-f317-4a28-9cd4-362efcb03dec\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/candidate/{{username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"candidate",
+						"{{username}}"
 					]
 				}
 			},
@@ -72,64 +195,18 @@
 			"response": []
 		},
 		{
-			"name": "AddCandidate",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "    {\n        \"name\": \"SomeName\",\n        \"surname\": \"SomeSurname\",\n        \"email\": \"somenewemail@gmail.com\",\n        \"phone\": \"8655555555\",\n        \"gender\": \"MALE\",\n        \"imageUrl\": \"www.gmail.com/myimage\",\n        \"address\": {\n            \"pin\": 123456,\n            \"city\": \"somecityaddress\",\n            \"town\": \"mytownaddr\",\n            \"addressline\": \"Flat 123, gallisome, AreaSome\"\n        },\n        \"bookmarkedCandidates\": [\n            \"34c31b6d-f317-4a28-9cd4-362efcb03deb\",\n            \"34c31b6d-f317-4a28-9cd4-362efcb03dec\"\n        ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/candidate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"candidate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "UpdateCandidate",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "    {\n        \"name\": \"someupdatedname\",\n        \"surname\": \"someupdatedsurname\",\n        \"email\": \"someone@someemail.com\",\n        \"phone\": \"8655555555\",\n        \"gender\": \"MALE\",\n        \"imageUrl\": \"www.gmail.com/myimage\",\n        \"address\": {\n            \"pin\": 123456,\n            \"city\": \"somecity\",\n            \"town\": \"mytown\",\n            \"addressline\": \"Flat 345, gallisome, AreaSome\"\n        },\n        \"bookmarkedCandidates\": [\n            \"34c31b6d-f317-4a28-9cd4-362efcb03deb\",\n            \"34c31b6d-f317-4a28-9cd4-362efcb03dec\"\n        ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/candidate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"candidate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "DeleteCandidate",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -178,37 +255,6 @@
 			"response": []
 		},
 		{
-			"name": "GetAllProfessions",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"employer\": \"wiporo\",\n\t\"designation\": \"java developer\",\n\t\"periodFrom\": \"2020-07-09\",\n\t\"periodTo\": \"2021-07-09\",\n\t\"professionAddress\": {\n\t\t\"pin\": 123457,\n\t\t\"city\": \"somecity\",\n\t\t\"town\": \"mytown\",\n\t\t\"addressline\": \"Flat 345, gallisome\"\n\t}\n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/professions",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"professions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "GetProfessionByCandidateUUID",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -244,51 +290,53 @@
 		{
 			"name": "DeleteProfessionById",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/profession/",
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/profession/0d77e02b-c940-485b-84af-5087d5a7671c",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"candidate",
+						"{{candidate_id}}",
 						"profession",
-						""
+						"0d77e02b-c940-485b-84af-5087d5a7671c"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "DeleteTagByTagId",
+			"name": "AddTagToCandidate",
 			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/tag/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"tag",
-						"2"
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AddTagForCandidate",
-			"request": {
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"name\": \"Java\"\n}",
+					"raw": "{\n  \"name\": \"MULESOFTT%%^\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -296,16 +344,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/candidates/{{candidate_id}}/tags",
+					"raw": "http://localhost:8080/candidate/{{candidate_id}}/tag",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"candidates",
+						"candidate",
 						"{{candidate_id}}",
-						"tags"
+						"tag"
 					]
 				}
 			},
@@ -317,6 +365,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -345,8 +403,18 @@
 			"response": []
 		},
 		{
-			"name": "RemoveTagOfCandidatesByTagId",
+			"name": "RemoveTagOfCandidatesByTagName",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -367,44 +435,21 @@
 			"response": []
 		},
 		{
-			"name": "GetCandidatesByTagID",
+			"name": "GetCandidatesByTagName",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
 			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"name\": \"Software\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/candidates/tag/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"candidates",
-						"tag",
-						"2"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GetAllTags",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -417,14 +462,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/tags",
+					"raw": "http://localhost:8080/tag/3/candidates",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"tags"
+						"tag",
+						"3",
+						"candidates"
 					]
 				}
 			},
