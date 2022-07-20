@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
 import com.sndcorp.candidatemanage.entities.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
@@ -20,7 +23,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 	@Query(value = "SELECT TAG_ID FROM candidates_tags WHERE candidate_id = :candidateId", nativeQuery = true)
 	List<Long> getTagIdsByCandidateId(String candidateId);
 	
-	List<Tag> findTagsByCandidates(Candidate cndidate);
+	List<Tag> findTagsByCandidates(Candidate cndidate, Sort sort);
 	
 	void deleteById(Long tag_id);
 }

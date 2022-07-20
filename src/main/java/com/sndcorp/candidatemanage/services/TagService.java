@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
@@ -56,7 +57,7 @@ public class TagService {
 	public Tag addTag(String candidateId, Tag tagRequest) {
 		Candidate candidate = candidateRepo.findById(candidateId)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
-		log.debug("adding tag to candidate : {}", candidate);
+		log.debug("adding tag to candidate : {}", candidate.getUsername());
 		tagRequest.setName(tagRequest.getName().toLowerCase()); //store all tags in lowercase
 		Optional<Tag> opt_tag = tagRepo.findByName(tagRequest.getName());
 
@@ -87,8 +88,8 @@ public class TagService {
 		Candidate candidate = candidateRepo.findById(candidateId)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId));
 
-		List<Tag> tags = tagRepo.findTagsByCandidates(candidate);
-		log.debug("findTagsByCandidate tags:: {}", tags);
+		List<Tag> tags = tagRepo.findTagsByCandidates(candidate, Sort.by("name").descending());
+		tags.forEach(tag -> log.debug("findTagsByCandidate tag name: {}", tag.getName()));
 		return tags;
 	}
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
@@ -30,8 +31,11 @@ public class CandidateController {
 
 	@GetMapping("/candidates")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<Candidate>> getAllCandidates() {
-		List<Candidate> Candidates = candidateService.findAllCandidates();
+	public ResponseEntity<List<Candidate>> getAllCandidates(@RequestParam(required = false) String name,
+		      @RequestParam(defaultValue = "0") int pageNo,
+		      @RequestParam(defaultValue = "2") int size,
+		      @RequestParam(defaultValue = "name,desc") String[] sort) {
+		List<Candidate> Candidates = candidateService.findAllCandidates(name, pageNo, size, sort);
 		return new ResponseEntity<>(Candidates, HttpStatus.OK);
 	}
 

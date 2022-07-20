@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,5 +37,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	Boolean existsByUsername(String username);
 
 	Boolean existsByEmail(String email);
+
+	Page<Candidate> findByUsernameContaining(String name, Pageable pageable);
 
 }
