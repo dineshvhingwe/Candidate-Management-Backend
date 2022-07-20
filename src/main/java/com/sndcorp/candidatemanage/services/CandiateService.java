@@ -8,12 +8,15 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
-import com.sndcorp.candidatemanage.entities.Tag;
 import com.sndcorp.candidatemanage.exceptions.ResourceNotFoundException;
 import com.sndcorp.candidatemanage.repo.CandidateRepository;
 import com.sndcorp.candidatemanage.repo.ProfessionRepository;
@@ -28,11 +31,16 @@ public class CandiateService {
 
 	@Autowired
 	private CandidateRepository candidateRepo;
+	
 	@Autowired
 	private TagRepository tagRepo;
+	
 	@Autowired
 	private ProfessionRepository professionRepo;
 
+	@Autowired
+	private AsycServices asycServices;
+	
 	public Candidate addCandidate(Candidate candidate) {
 		log.info("Saving :: {} ", candidate);
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -41,39 +49,30 @@ public class CandiateService {
 		return candidateRepo.save(candidate);
 	}
 
-	public List<Candidate> findAllCandidates() {
-		return candidateRepo.findAll();
+	public List<Candidate> findAllCandidates(String name, int pageNo, int size, String[] sort) {
+
+		List<Candidate> candidates;
+		// for simplicity keep sorting by name for timebeing
+		Pageable pageable = PageRequest.of(pageNo, size, Sort.by("name").descending());
+		if (name.isBlank()) {
+			Page<Candidate> candidatePage = candidateRepo.findAll(pageable);
+			candidates = candidatePage.getContent();
+			log.debug("Page is :{}", candidatePage);
+			return candidates;
+		} else {
+			Page<Candidate> candidatePage = candidateRepo.findByUsernameContaining(name, pageable);
+			candidates = candidatePage.getContent();
+			log.debug("Page is :{}", candidatePage);
+			return candidates;
+		}
 	}
 
 	public String updateCandidate(Candidate candidate, String username) {
 
 		userNameSecurityCheck(username);
 
-		Runnable runnable = () -> {
-			Candidate empDb = candidateRepo.findCandidateByUsername(username)
-					.orElseThrow(() -> new ResourceNotFoundException("Candidate", "Email"));
-
-			log.info("updating candidate values in thread: {} ", Thread.currentThread().getName());
-			empDb.setName(candidate.getName());
-			empDb.setSurname(candidate.getSurname());
-			empDb.setAddress(candidate.getAddress());
-			empDb.setBookmarkedCandidates(candidate.getBookmarkedCandidates());
-			empDb.setImageUrl(candidate.getImageUrl());
-			empDb.setTags(candidate.getTags());
-			if (!empDb.getPhone().equalsIgnoreCase(candidate.getPhone())) {
-				triggerMultiFactorAuthPhone();
-
-			}
-			if (!empDb.getEmail().equalsIgnoreCase(candidate.getEmail())) {
-				triggerMultiFactorAuthEmail();
-
-			}
-			candidateRepo.save(empDb);
-		};
-
 		log.debug("Starting Thread to update the values of Phone and Email {}", Thread.currentThread().getName());
-		new Thread(runnable).start();
-		log.debug("Started Thread to update the values of Phone and Email");
+		asycServices.updateCandidate(candidate, username);
 
 		return username;
 	}
@@ -126,12 +125,12 @@ public class CandiateService {
 	@Transactional(value = TxType.REQUIRES_NEW)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteCandidateByCandidateId(String candidateId) {
-		
+
 		professionRepo.deleteByCandidate(candidateRepo.findById(candidateId)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidateId)));
-		candidateRepo.deleteById(candidateId);		
+		candidateRepo.deleteById(candidateId);
 	}
-	
+
 	public void triggerMultiFactorAuthPhone() {
 
 	}
