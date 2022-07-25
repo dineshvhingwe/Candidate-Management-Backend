@@ -42,7 +42,7 @@ public class EhCacheConfiguration {
 						EventType.REMOVED, EventType.EXPIRED)
 				.unordered().asynchronous();
 
-		// create caches we need
+		// create caches as we need
 		cacheManager.createCache("candidatesByTagsCache", Eh107Configuration
 				.fromEhcacheCacheConfiguration(configurationBuilder.withService(asynchronousListener)));
 		log.debug("Created Cache Manager successfully: {}", cacheManager);
