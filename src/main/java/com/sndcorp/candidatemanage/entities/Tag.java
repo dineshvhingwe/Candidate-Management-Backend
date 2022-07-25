@@ -1,5 +1,6 @@
 package com.sndcorp.candidatemanage.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
+public class Tag implements Serializable{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,4 +42,9 @@ public class Tag {
 	@ManyToMany(mappedBy = "tags")
 	@JsonIgnore
 	private List<Candidate> candidates;
+
+	@Override
+	public String toString() {
+		return "Tag [name=" + name + "]";
+	}
 }
