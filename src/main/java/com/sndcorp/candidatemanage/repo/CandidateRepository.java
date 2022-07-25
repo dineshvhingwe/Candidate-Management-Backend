@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,7 +33,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	@Query(value = "UPDATE CANDIDATES c SET c.name = :name, c.surname = :surname where c.email = :email", nativeQuery = true)
 	void updateNameAndJobTitleByEmail(String name, String surname, String email);
 
-	List<Candidate> getCandidatesByTags(Tag tag);
+	Page<Candidate> getCandidatesByTags(Tag tag, Pageable page);
 	
 	Boolean existsByUsername(String username);
 
