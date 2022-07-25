@@ -35,8 +35,8 @@ public class CandidateController {
 		      @RequestParam(defaultValue = "0") int pageNo,
 		      @RequestParam(defaultValue = "2") int size,
 		      @RequestParam(defaultValue = "name,desc") String[] sort) {
-		List<Candidate> Candidates = candidateService.findAllCandidates(name, pageNo, size, sort);
-		return new ResponseEntity<>(Candidates, HttpStatus.OK);
+		List<Candidate> candidates = candidateService.findAllCandidates(name, pageNo, size, sort);
+		return new ResponseEntity<>(candidates, HttpStatus.OK);
 	}
 
 	@GetMapping("/candidate/{username}")
