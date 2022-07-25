@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sndcorp.candidatemanage.entities.Candidate;
@@ -50,11 +51,15 @@ public class TagController {
 	}
 
 	@GetMapping("/tag/{id}/candidates")
-	public ResponseEntity<List<Candidate>> getAllCandidatesByTagId(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<List<Candidate>> getAllCandidatesByTagId(@PathVariable(value = "id") Long id,
+			 @RequestParam(defaultValue = "0") int pageNo,
+		     @RequestParam(defaultValue = "2") int size) {
 		if (!tagService.existsById(id)) {
 			throw new ResourceNotFoundException("Tag", id);
 		}
-		return new ResponseEntity<>(tagService.findCandidatesByTags(id), HttpStatus.OK);
+		log.debug("getAllCandidatesByTagId(). Fetching from Service. Cacheable");
+		List<Candidate> candidates = tagService.findCandidatesByTags(id, pageNo, size);
+		return new ResponseEntity<>(candidates, HttpStatus.OK);
 	}
 
 	@PostMapping("/candidate/{candidateId}/tag")
@@ -67,7 +72,7 @@ public class TagController {
 	@DeleteMapping("/candidate/{candidateId}/tag/{tag_id}")
 	public ResponseEntity<HttpStatus> deleteTagFromCandidate(@PathVariable(value = "candidateId") String candidateId,
 			@PathVariable(value = "tag_id") Long tag_id) {
-		
+
 		tagService.deleteTagFromCandidate(candidateId, tag_id);
 		log.debug("deleteTagFromCandidate successfully deleted tag {}", tag_id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
