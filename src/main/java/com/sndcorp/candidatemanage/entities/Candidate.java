@@ -28,6 +28,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.sndcorp.candidatemanage.exceptions.ResourceNotFoundException;
 
 import lombok.AllArgsConstructor;
@@ -64,7 +66,7 @@ public class Candidate implements Serializable {
 	@Size(min = 5, max = 20)
 	@Column(unique = true)
 	private String username;
-	
+
 	@Column(unique = true, updatable = false)
 	@Email
 	private String email;
@@ -78,15 +80,17 @@ public class Candidate implements Serializable {
 	private String imageUrl;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	// extra column in Candidate table address_id as FK to addree_ID in Address table asPK
+	// extra column in Candidate table address_id as FK to addree_ID in Address
+	// table asPK
 	private Address address;
 
 	@ElementCollection(targetClass = UUID.class)
 	// @Column(columnDefinition = "char(36)")
 	@Type(type = "org.hibernate.type.UUIDCharType")
+	@JsonIgnore
 	private Set<UUID> bookmarkedCandidates = new TreeSet<UUID>();
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "candidates_tags", joinColumns = @JoinColumn(name = "candidate_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private Set<Tag> tags = new HashSet<>();
 
@@ -110,5 +114,13 @@ public class Candidate implements Serializable {
 		} else {
 			throw new ResourceNotFoundException("Tag", tag_id);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Candidate [candidate_id=" + candidate_id + ", name=" + name + ", surname=" + surname + ", username="
+				+ username + ", email=" + email + ", phone=" + phone + ", gender=" + gender + ", imageUrl=" + imageUrl
+				+ ", address=" + address + ", tags=" + tags + ", dateCreated=" + dateCreated + ", lastUpdated="
+				+ lastUpdated + "]";
 	}
 }
