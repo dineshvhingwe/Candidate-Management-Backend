@@ -21,7 +21,7 @@ public class AsycServices {
 	public void updateCandidate(Candidate candidate, String username) {
 		log.debug("Started Thread to update the values of Phone and Email", Thread.currentThread().getName());
 
-		Candidate empDb = candidateRepo.findCandidateByUsername(username)
+		Candidate empDb = candidateRepo.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", "Email"));
 
 		log.info("updating candidate values in thread: {} ", Thread.currentThread().getName());

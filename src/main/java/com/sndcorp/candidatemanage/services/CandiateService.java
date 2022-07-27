@@ -92,7 +92,7 @@ public class CandiateService {
 	}
 
 	public Candidate findCandidateByUsername(String username) {
-		return candidateRepo.findCandidateByUsername(username)
+		return candidateRepo.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", "Username: " + username));
 	}
 
