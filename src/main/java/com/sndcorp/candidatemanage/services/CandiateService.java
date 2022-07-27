@@ -23,6 +23,7 @@ import com.sndcorp.candidatemanage.repo.ProfessionRepository;
 import com.sndcorp.candidatemanage.repo.TagRepository;
 import com.sndcorp.candidatemanage.security.services.UserDetailsImpl;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -99,15 +100,16 @@ public class CandiateService {
 	public Candidate addOrRemoveBookmarkToCandidate(String candidate_id, String bookmark_id) {
 		Candidate candidate = candidateRepo.findById(candidate_id)
 				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidate_id));
-		Set<UUID> bookmarks = candidate.getBookmarkedCandidates();
-		if (bookmarks.contains(UUID.fromString(bookmark_id))) {
+		
+		Set<String> bookmarks = candidate.getBookmarkedCandidates();
+		if (bookmarks.contains(bookmark_id)) {
 			log.debug("Bookmark already exists. Removing {}", bookmark_id);
 			bookmarks.remove(UUID.fromString(bookmark_id));
 			candidate.setBookmarkedCandidates(bookmarks);
 			return candidateRepo.save(candidate);
 		}
 		log.debug("Bookmark doesnt exists. Adding {}", bookmark_id);
-		bookmarks.add(UUID.fromString(bookmark_id));
+		bookmarks.add(bookmark_id);
 		candidate.setBookmarkedCandidates(bookmarks);
 		return candidateRepo.save(candidate);
 
@@ -137,5 +139,17 @@ public class CandiateService {
 
 	public void triggerMultiFactorAuthEmail() {
 
+	}
+
+	public List<Candidate> getBookmarkedCandidates(String candidate_id) {
+		Candidate candidate = candidateRepo.findById(candidate_id)
+				.orElseThrow(() -> new ResourceNotFoundException("Candidate", candidate_id));
+		List<Candidate> bookmarkedCandidates = candidateRepo.findAllById(candidate.getBookmarkedCandidates());
+		if(null != bookmarkedCandidates && !Collections.isEmpty(bookmarkedCandidates)) {
+			log.debug("found following {} bookmarked candodates {}", bookmarkedCandidates.size(), bookmarkedCandidates);
+			return bookmarkedCandidates;
+		} else {
+			throw new ResourceNotFoundException("Bookmarked Candidates", candidate_id);
+		}
 	}
 }

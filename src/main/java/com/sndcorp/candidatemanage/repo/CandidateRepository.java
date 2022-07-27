@@ -1,6 +1,8 @@
 package com.sndcorp.candidatemanage.repo;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -36,5 +38,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	Boolean existsByEmail(String email);
 
 	Page<Candidate> findByUsernameContaining(String name, Pageable pageable);
+	
+	List<Candidate> findAllByCandidateIdIn(Set<String> candidate_ids);
 
 }

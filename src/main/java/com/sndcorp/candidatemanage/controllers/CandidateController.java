@@ -74,7 +74,13 @@ public class CandidateController {
 	@GetMapping("/candidate/{candidate_id}/bookmark/{bookmark_id}")
 	public ResponseEntity<Candidate> addBookmarkToCandidate(@PathVariable("candidate_id") String candidate_id, @PathVariable("bookmark_id") String bookmark_id ) {
 		Candidate candidate = candidateService.addOrRemoveBookmarkToCandidate(candidate_id, bookmark_id);
-		return new ResponseEntity<>(candidate, HttpStatus.CREATED);
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/candidates/{candidate_id}/bookmarks")
+	public ResponseEntity<List<Candidate>> getBookmarkedCandidates(@PathVariable("candidate_id") String candidate_id) {
+		List<Candidate> candidates = candidateService.getBookmarkedCandidates(candidate_id);
+		return new ResponseEntity<>(candidates, HttpStatus.CREATED);
 	}
 	
 }

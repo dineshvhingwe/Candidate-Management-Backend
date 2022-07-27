@@ -13,6 +13,6 @@ public class CacheEventLogger implements CacheEventListener<Object, Object> {
 	@Override
 	public void onEvent(CacheEvent<? extends Object, ? extends Object> cacheEvent) {
 		log.debug("Cache Update Notification: Key: {} , Old: {}, New: {}", cacheEvent.getKey(),
-				cacheEvent.getOldValue(), cacheEvent.getNewValue() == null ? " " : cacheEvent.getNewValue() == null);
+				cacheEvent.getOldValue(), cacheEvent.getNewValue() == null ? " " : cacheEvent.getNewValue());
 	}
 }

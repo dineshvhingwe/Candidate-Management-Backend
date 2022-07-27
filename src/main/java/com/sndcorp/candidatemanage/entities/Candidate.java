@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.sndcorp.candidatemanage.exceptions.ResourceNotFoundException;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -41,7 +40,7 @@ import lombok.ToString;
 
 @Entity
 @Data
-@ToString
+@ToString(exclude = {"bookmarkedCandidates"})
 @Setter
 @Getter
 @NoArgsConstructor
@@ -55,7 +54,7 @@ public class Candidate implements Serializable {
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
 	@Column(length = 36)
-	private String candidate_id;
+	private String candidateId;
 
 	private String name;
 
@@ -81,14 +80,14 @@ public class Candidate implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	// extra column in Candidate table address_id as FK to addree_ID in Address
-	// table asPK
+	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@ElementCollection(targetClass = UUID.class)
-	// @Column(columnDefinition = "char(36)")
-	@Type(type = "org.hibernate.type.UUIDCharType")
-	@JsonIgnore
-	private Set<UUID> bookmarkedCandidates = new TreeSet<UUID>();
+	
+	 @ElementCollection(targetClass = String.class)
+	 @Type(type = "org.hibernate.type.StringType")
+	 @JsonIgnore 
+	 private Set<String> bookmarkedCandidates; 
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "candidates_tags", joinColumns = @JoinColumn(name = "candidate_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -102,7 +101,7 @@ public class Candidate implements Serializable {
 	@UpdateTimestamp
 	private Date lastUpdated;
 
-	// getters and setters to easeout adding/removings tags to collectionsion
+	// getters and setters to easeout adding/removings tags to collection
 	public void addTag(Tag tag) {
 		this.tags.add(tag);
 	}
@@ -115,12 +114,17 @@ public class Candidate implements Serializable {
 			throw new ResourceNotFoundException("Tag", tag_id);
 		}
 	}
+	
+	// getters and setters to easeout adding/removings bookmarks to collections
+	public void addBookmark(String bookmark) {
+		this.bookmarkedCandidates.add(bookmark);
+	}
 
-	@Override
-	public String toString() {
-		return "Candidate [candidate_id=" + candidate_id + ", name=" + name + ", surname=" + surname + ", username="
-				+ username + ", email=" + email + ", phone=" + phone + ", gender=" + gender + ", imageUrl=" + imageUrl
-				+ ", address=" + address + ", tags=" + tags + ", dateCreated=" + dateCreated + ", lastUpdated="
-				+ lastUpdated + "]";
+	public void removeBookmark(String bookmark) {
+		if (!Collections.isEmpty(bookmarkedCandidates) && bookmarkedCandidates.contains(bookmark)) {
+			this.bookmarkedCandidates.remove(bookmark);
+		} else {
+			throw new ResourceNotFoundException("Bookmark", bookmark);
+		}
 	}
 }
