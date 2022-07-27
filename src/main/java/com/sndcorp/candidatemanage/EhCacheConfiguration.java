@@ -15,11 +15,11 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.MemoryUnit;
 import org.ehcache.event.EventType;
 import org.ehcache.jsr107.Eh107Configuration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.sndcorp.candidatemanage.security.services.UserDetailsImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,10 +32,6 @@ public class EhCacheConfiguration {
 		CachingProvider provider = Caching.getCachingProvider();
 		CacheManager cacheManager = provider.getCacheManager();
 
-		CacheConfigurationBuilder<SimpleKey, List> configurationBuilder = CacheConfigurationBuilder
-				.newCacheConfigurationBuilder(SimpleKey.class, List.class,
-						ResourcePoolsBuilder.heap(1000).offheap(5, MemoryUnit.MB))
-				.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(2)));
 
 		CacheEventListenerConfigurationBuilder asynchronousListener = CacheEventListenerConfigurationBuilder
 				.newEventListenerConfiguration(new CacheEventLogger(), EventType.CREATED, EventType.UPDATED,
@@ -43,8 +39,25 @@ public class EhCacheConfiguration {
 				.unordered().asynchronous();
 
 		// create caches as we need
+		CacheConfigurationBuilder<SimpleKey, List> configurationBuilder = CacheConfigurationBuilder
+				.newCacheConfigurationBuilder(SimpleKey.class, List.class,
+						ResourcePoolsBuilder.heap(1000).offheap(5, MemoryUnit.MB))
+				.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(2)));
+
 		cacheManager.createCache("candidatesByTagsCache", Eh107Configuration
 				.fromEhcacheCacheConfiguration(configurationBuilder.withService(asynchronousListener)));
+		
+
+		
+		CacheConfigurationBuilder<SimpleKey, UserDetailsImpl> userDetailsCacheConfigurationBuilder = CacheConfigurationBuilder
+				.newCacheConfigurationBuilder(SimpleKey.class, UserDetailsImpl.class,
+						ResourcePoolsBuilder.heap(1000).offheap(5, MemoryUnit.MB))
+				.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(2)));
+
+		// create caches as we need
+		cacheManager.createCache("userDetailsCache", Eh107Configuration
+				.fromEhcacheCacheConfiguration(userDetailsCacheConfigurationBuilder.withService(asynchronousListener)));
+		
 		log.debug("Created Cache Manager successfully: {}", cacheManager);
 		return cacheManager;
 	}
