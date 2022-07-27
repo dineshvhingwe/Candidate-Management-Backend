@@ -1,12 +1,10 @@
 package com.sndcorp.candidatemanage.repo;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,8 +24,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, String> {
 	// query method
 	Optional<Candidate> findCandidateByEmail(String email);
 
-	Optional<Candidate> findCandidateByUsername(String username);
-	
 	@Transactional(value = TxType.REQUIRES_NEW)
 	@Modifying(clearAutomatically = true)
 	@Query(value = "UPDATE CANDIDATES c SET c.name = :name, c.surname = :surname where c.email = :email", nativeQuery = true)
