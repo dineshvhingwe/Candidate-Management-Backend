@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Tag implements Serializable{
 
+	private static final long serialVersionUID = -7582493920779267168L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
